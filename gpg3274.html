@@ -1,0 +1,630 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head7>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <title>gpgQl</title>
+<script language = "javascript" type="text/javascript"/>
+<!-- 
+
+ var previousCubeObj;
+  var shadowCubeObj;
+  var previousX;
+  var previousY;
+  var cmd;
+  var face = "#";
+  var cubeFace = "#";
+  var cube;
+  var X, Y;
+   var colorof;
+  var color;
+  var url  = "";
+
+
+  function initPage() {
+  command("U");
+  
+   function GPGSquare (that, sqColor) {
+        that.colorIt = function(e) {
+           colorof;
+           X=previousX;  Y=previousY;
+           var choice = that;
+           colorof = choice.style.backgroundColor;
+            previousCubeObj.style.borderColor = colorof; 
+            color = colorof;
+            cube = shadowCubeObj.firstChild.nodeValue;
+            cmd="C";
+            sendMoveToServer();
+           }  
+        that.style.backgroundColor = sqColor;
+        that.addEventListener('click', that.colorIt, true);   
+   }
+   var squareColors = new Array ('red', 'orange', 'yellow', 'green', 'blue');
+
+    for (var i=0;i<squareColors.length;i++) {
+        var piece = document.getElementById ('piece'+i);
+        var sqColor = squareColors[i];
+        GPGSquare (piece,sqColor);
+     }
+
+   function GPGCube (that2)  {
+      cubeObj = that2;
+      that2.dropIt = function(e)  { 
+         previousX = e.clientX - cX;
+         previousY = e.clientY - cY;	
+         previousCubeObj = cubeObj;
+         cubeObj.style.zIndex = 5;
+         cubeObj = null;
+         return false;
+      } 
+       that2.moveIt = function(e)  {
+         cubeObj.style.left = e.clientX - cX  + "px";
+         cubeObj.style.top = e.clientY - cY  + "px";
+         return false;
+      }
+       that2.grabIt = function(e)  {
+          cubeObj = that2;
+          cX = e.clientX - cubeObj.offsetLeft;
+          cY = e.clientY - cubeObj.offsetTop;
+         var cubeObjID = e.target.id;
+         shadowCubeObj = document.getElementById("s" + cubeObjID); 
+         cubeObj.zIndex = 100;
+       }
+       that2.addEventListener('mouseup', that2.dropIt, true);
+       that2.addEventListener('mousemove', that2.moveIt, true);
+       that2.addEventListener('mousedown', that2.grabIt, true); 
+     }   
+
+  for (var i=0;i<10;i++) {
+      var cubeObj = document.getElementById ('cube'+i);  
+      GPGCube (cubeObj);
+   } 
+
+
+ function GPGCard (that3) {
+          that3.toFront = function(e)  {
+         var cardObj = that3;
+          cardObj.style.visibilitiy = hidden;
+         window.alert("  " + 2);
+           } 
+     
+        that3.toBack = function(e)  {
+        var cardObj = that3;
+        that3.style.visibility = visible;
+        }
+
+        that3.addEventListener('mouseover', that3.toBack, true);  
+        that3.addEvent.Listener('mouseout', that3.toFront, true);
+   }
+    for (var i = 0;i < 2; i++) {
+        var piece = document.getElementById ('card'+ ii);
+        GPGCard (piece);
+     }
+
+}
+
+function alertme(which) {
+cubeFace = cube;
+cubeFace = document.forms['0'].elements[which].value;
+ if(cubeFace != "#")  {
+      previousCubeObj.firstChild.nodeValue = cubeFace;
+    }
+    else if(cubeFace == "#") {
+      previousCubeObj.firstChild.nodeValue = cube;
+      cubeFace = cube;
+    }
+cmd = "F";
+sendMoveToServer();
+}
+
+function command(cm)  {
+    cmd = cm;
+    document.forms['0'].elements['0'].value = "";             
+    sendMoveToServer();
+ }
+
+  function sendMoveToServer() { 
+   reqMv = new XMLHttpRequest();
+   url = getDataFromScreen();
+   reqMv.open("GET", url, true);
+   reqMv.onreadystatechange = acknowledgeMove;
+   reqMv.send(null); 
+   }     
+
+  function getDataFromScreen()  {
+     switch(cmd) {
+    case "C":
+      url="recordMv.php?x=" + escape(X) + "&y=" + escape(Y) + "&color=" + escape(color) + "&cube=" + escape(cube); 
+      break;     
+    case "F":
+     url = "recordFace.php?cube="+ escape(cube)+"&face="+ escape(cubeFace);
+     break;
+    case "U":  
+      url = "gpgMovesDump.php";
+      break;
+    case "X": 
+      url= "startOver.php";
+      break;
+    default:
+    break;
+    }
+  document.forms["0"].elements["0"].value=url;
+  return url; 
+ }   
+
+  function acknowledgeMove() {
+    if(reqMv.readyState == 4) {
+      if(reqMv.status == 200) {
+       var movesSpec;
+       var theFace;
+       var specs = reqMv.responseText;
+       document.getElementById("moves").innerHTML = specs;
+       var movesSpec = specs.split(",");
+        var multiplier = 6;
+        var a = 2;
+        var b = 3;
+        var d = 1;
+        var g = 4;
+         if(cmd =="U") {
+           for (i = 9; i  >= 0 ; i --)  {
+             a = 2 + i*multiplier;
+             b = 3 + i*multiplier;
+             d = 1 +  i*multiplier;
+             e = 0 + i*multiplier;
+             g = 4 + i*multiplier;;
+             var n = 9 - i;
+            cubeObj = document.getElementById("cube"  + n);
+            cubeObj.style.top = movesSpec[b] + "px";
+             cubeObj.style.left = movesSpec[a] +"px";
+            cubeObj.style.borderColor = movesSpec[d]; 
+             cubeObj.innerHTML = movesSpec[g]; 
+           }
+                
+         cmd = null;
+         }
+         else if(cmd == "X")  {
+           for(i= 0; i  <=  9 ; i++)  {
+              cubeObj = document.getElementById("cube" + i);
+              shadowCubeObj = document.getElementById("scube" +  i); 
+              cubeObj.firstChild.nodeValue = shadowCubeObj.innerHTML;
+              cubeObj.style.borderColor = "black";
+              cubeObj.style.left = "670px";
+              cubeObj.style.top = "30px";           
+           }
+         }
+      }
+   //  t= setTimeout('command("U")', 1000);
+    }
+   }
+
+ img_1a = new Image();
+ img_1a.src  = "ambivale.gif";
+ img_a1 = new Image();
+ img_a1.src = "t_ambi.gif";
+ img_1b = new Image();
+ img_1b.src = "artvsnat.gif";
+ img_b1 = new Image();
+ img_b1.src = "t_artvsnat.gif";
+ img_1c = new Image();
+ img_1c.src = "avoiding.gif";
+ img_c1 = new Image();
+ img_c1.src = "t_avoi.gif";
+ img_1d = new Image();
+ img_1d.src = "calculus.gif";
+ img_d1 = new Image();
+ img_d1.src = "t_calc.gif";
+ img_1e = new Image();
+ img_1e.src = "cityasar.gif";
+ img_e1 = new Image();
+ img_e1.src = "t_city.gif";
+ img_1f = new Image();
+ img_1f.src = "coding.gif";
+ img_f1 = new Image();
+ img_f1.src = "t_codi.gif";
+ img_2a = new Image();
+ img_2a.src = "contempl.gif";
+ img_a2 = new Image();
+ img_a2.src = "t_cont.gif";
+ img_2b = new Image();
+ img_2b.src = "continu.gif";
+ img_b2 = new Image();
+ img_b2.src = "t_conti.gif";
+ img_2c = new Image();
+ img_2c.src = "creation.gif";
+ img_c2 =  new Image;
+ img_c2.src = "t_crea.gif";
+ img_2d = new Image();
+ img_2d.src = "developm.gif";
+ img_d2 = new Image;
+ img_d2.src = "t_deve.gif";
+ img_2e = new Image();
+ img_2e.src = "educat.gif";
+ img_e2 = new Image();
+ img_e2.src = "t_educ.gif";
+ img_2f = new Image();
+ img_2f.src = "helpless.gif";
+ img_f2 = new Image();
+ img_f2.src = "t_help.gif";
+ img_3a = new Image();
+ img_3a.src = "intuit.gif";
+ img_a3 = new Image();
+ img_a3.src = "t_intu.gif";
+ img_3b = new Image();
+ img_3b.src = "monetary.gif"
+ img_b3 = new Image();
+ img_b3.src = "t_mone.gif";
+ img_3c = new Image();
+ img_3c.src = "wavicle.gif";
+ img_c3 = new Image();
+ img_c3.src = "t_wavi.gif";
+ img_3d = new Image();
+ img_3d.src = "freedom.gif";
+ img_d3 = new Image();
+ img_d3.src = "t_free.gif";
+ img_3e = new Image();
+ img_3e.src = "emotiona.gif";
+ img_e3 = new Image();
+ img_e3.src = "t_emot.gif";
+ img_3f = new Image();
+ img_3f.src = "gestalt.gif";
+ img_f3 = new Image();
+ img_f3.src = "t_gest.gif";
+ img_4a = new Image();
+ img_4a.src = "harmony.gif";
+ img_a4 = new Image();
+ img_a4.src = "t_harm.gif";
+ img_4b = new Image();
+ img_4b.src = "hiddenpo.gif";
+ img_b4 = new Image();
+ img_b4.src = "t_hidd.gif";
+ img_4c = new Image();
+ img_4c.src = "joy.gif";
+ img_c4 = new Image();
+ img_c4.src = "t_joy.gif";
+ img_4d = new Image();
+ img_4d.src = "magic.gif";
+ img_d4 = new Image();
+ img_d4.src = "t_magi.gif";
+ img_4e = new Image();
+ img_4e.src = "mechanic.gif";
+ img_e4 = new Image();
+ img_e4.src = "t_multi.gif";
+ img_4f = new Image();
+ img_4f.src = "metamorp.gif";
+ img_f4 = new Image();
+ img_f4.src = "t_meta.gif";
+ img_5a = new Image();
+ img_5a.src = "naturalp.gif";
+ img_a5 = new Image();
+ img_a5.src = "t_natu.gif";
+ img_5b = new Image();
+ img_5b.src = "myth.gif";
+ img_b5 = new Image();
+ img_b5.src = "t_myth.gif";
+ img_5c = new Image();
+ img_5c.src = "niches.gif";
+ img_c5 = new Image();
+ img_c5.src = "t_nich.gif";
+ img_5d = new Image();
+ img_5d.src = "perspect.gif";
+ img_d5 = new Image();
+ img_d5.src = "t_pers.gif";
+ img_5e = new Image();
+ img_5e.src = "reaching.gif";
+ img_e5 = new Image();
+ img_e5.src = "t_reac.gif";
+ img_5f = new Image();
+ img_5f.src = "return.gif";
+ img_f5 = new Image();
+ img_f5.src = "t_retu.gif";
+ img_6a = new Image();
+ img_6a.src = "societya.gif";
+ img_a6 = new Image();
+ img_a6.src = "t_soci.gif";
+ img_6b = new Image();
+ img_6b.src = "strength.gif";
+ img_b6 = new Image();
+ img_b6.src = "t_struc.gif";
+ img_6c = new Image();
+ img_6c.src = "struggle.gif";
+ img_c6 = new Image();
+ img_c6.src = "t_strug.gif";
+ img_6d = new Image();
+ img_6d.src = "synergy.gif";
+ img_d6 = new Image();
+ img_d6.src = "t_syne.gif";
+ img_6e = new Image();
+ img_6e.src = "syntax.gif";
+ img_e6 = new Image();
+ img_e6.src = "t_synt.gif";
+ img_6f = new Image();
+ img_6f.src = "unwanted.gif";
+ img_f6 = new Image();
+ img_f6.src = "t_unwa.gif";
+ img_7a = new Image();
+ img_7a.src = "structur.gif";
+ img_a7 = new Image();
+ img_a7.src = "t_stri.gif";
+ img_7b = new Image();
+ img_7b.src = "anthropo.gif";
+ img_b7 = new Image();
+ img_b7.src = "t_anth.gif";
+  
+ 
+  function flip(iname,gname) {
+      iname.src = gname.src;
+       }
+
+-->
+</script>
+<style type="text/css">
+.piece {width: 25px; height: 25px; margin-left: 50px; float: left; background-color: #000;}
+.cube {position: absolute; top: 30px; left: 670px; cursor: move; color: white; height: 20px; width: 20px; background-color: brown; border: 8px solid black; clip: rect(0px, 40px, 40px, 0px);}
+.scube {position: absolute; top: 15px; left: 790px; cursor: move; color: white; height: 20px; width: 20px; background-color: white; border: 8px solid white; clip: rect(0px, 40px, 40px, 0px);}
+ .card  {height: 100; width: 100; visibility: visible;}
+
+#X {
+position: absolute;
+border: 5px solid black;
+background-color: white;
+height: 20px;
+width: 20px;
+color: green;
+top: 30px;
+left:  585px;
+}
+
+#U {
+position: absolute;
+border: 5px solid black;
+background-color: white;
+height: 20px;
+width: 20px;
+color: green;
+top: 30px;
+left: 620px;
+} 
+
+ #log  {
+ position: absolute;
+ border: 1px dotted black;
+ left: 20px;
+ top: 150px;
+ height: 250px;
+ width: 200px;
+ background-color: white;
+ clip: rect(0px, 250px, 250px,  0px)
+}
+
+</style>
+</head>
+ <body onload="initPage()" bgcolor="#FFFFFF">
+<div id = "game">
+  <div class="pieces">
+
+    <div id="piece0" class="piece"></div>
+    <div id="piece1" class="piece"></div>
+    <div id="piece2" class="piece"></div>
+    <div id="piece3" class="piece"></div>
+    <div id="piece4" class="piece"></div>
+  </div>
+  <div class="cubes">
+    <div id="cube0" class="cube">10</div>
+
+    <div id="cube1" class="cube">9</div>
+    <div id="cube2" class="cube">8</div>
+    <div id="cube3" class="cube">7</div>
+    <div id="cube4" class="cube">6</div>
+    <div id="cube5" class="cube">5</div>
+    <div id="cube6" class="cube">4</div>
+
+    <div id="cube7" class="cube">3</div>
+    <div id="cube8" class="cube">2</div>
+    <div id="cube9" class="cube">1</div>
+   </div> 
+  <div class="scubes">
+    <div id="scube0" class="scube">10</div>
+    <div id="scube1" class="scube">9</div>
+
+    <div id="scube2" class="scube">8</div>
+    <div id="scube3" class="scube">7</div>
+    <div id="scube4" class="scube">6</div>
+    <div id="scube5" class="scube">5</div>
+    <div id="scube6" class="scube">4</div>
+    <div id="scube7" class="scube">3</div>
+
+    <div id="scube8" class="scube">2</div>
+    <div id="scube9" class="scube">1</div>
+   </div> 
+</div>
+
+<div id="X" onclick="command('X')">X</div>
+<div id="U" onclick="command('U')">U</div>
+<div id="log" class="notes"><P></P>
+<span id="mvs"><center>from server:</center></span><span id = "moves"></span>
+
+</div>
+
+<form action = "post" name = "stats"/>
+
+<input type="text" size="50" value = "to server:" name = "url"/><BR>
+<input type="button" name="whichSide" value="#" onclick="alertme(1)">
+<input type="button" name="whichSide" value="P" onclick="alertme(2)">
+<input type="button" name="whichSide" value="C" onclick="alertme(3)">
+<input type= "button" name="whichSide" value="O" onclick="alertme(4)">
+<input type="button" name="whichSide" value="-" onclick="alertme(5)">
+</form>
+
+<center><TABLE cols=7 width=670 border=0>
+  <TBODY>
+  <TR>
+
+    <TD width=40 rowSpan=7></TD>
+  <TD><A onmouseover="flip(ambival, img_a1);" onclick="return false;"
+      onmouseout="flip(ambival, img_1a);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100" ><IMG height=100 
+      src="gpgcards_files/ambivale.gif" width=100 name=ambival></A></TD> 
+    <TD><A onmouseover="flip(artvsnat, img_b1);" onclick="return false;" 
+      onmouseout="flip(artvsnat, img_1b);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/artvsnat.gif" width=100 name=artvsnat></A></TD>
+    <TD><A onmouseover="flip(avoiding, img_c1);" onclick="return false;" 
+      onmouseout="flip(avoiding, img_1c);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/avoiding.gif" width=100 name=avoiding></A></TD>
+    <TD><A onmouseover="flip(calculus, img_d1);" onclick="return false;" 
+      onmouseout="flip(calculus, img_1d);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/calculus.gif" width=100 name=calculus></A></TD>
+    <TD><A onmouseover="flip(cityasar, img_e1);" onclick="return false;" 
+      onmouseout="flip(cityasar, img_1e);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/cityasar.gif" width=100 name=cityasar></A></TD>
+
+    <TD><A onmouseover="flip(coding, img_f1);" onclick="return false;" 
+      onmouseout="flip(coding, img_1f);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/coding.gif" width=100 name=coding></A></TD></TR>
+  <TR>
+    <TD><A onmouseover="flip(contempl, img_a2);" onclick="return false;" 
+      onmouseout="flip(contempl, img_2a);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/contempl.gif" width=100 name=contempl></A></TD>
+
+    <TD><A onmouseover="flip(continu, img_b2);" onclick="return false;" 
+      onmouseout="flip(continu, img_2b);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/continu.gif" width=100 name=continu></A></TD>
+    <TD><A onmouseover="flip(creation, img_c2);" onclick="return false;" 
+      onmouseout="flip(creation, img_2c);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/creation.gif" width=100 name=creation></A></TD>
+    <TD><A onmouseover="flip(developm, img_d2);" onclick="return false;" 
+      onmouseout="flip(developm, img_2d);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/developm.gif" width=100 name=developm></A></TD>
+    <TD><A onmouseover="flip(educat, img_e2);" onclick="return false;" 
+      onmouseout="flip(educat, img_2e);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/educat.gif" width=100 name=educat></A></TD>
+    <TD><A onmouseover="flip(helpless, img_f2);" onclick="return false;" 
+      onmouseout="flip(helpless, img_2f);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/helpless.gif" width=100 name=helpless></A></TD></TR>
+  <TR>
+
+    <TD><A onmouseover="flip(intuit, img_a3);" onclick="return false;" 
+      onmouseout="flip(intuit, img_3a);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/intuit.gif" width=100 name=intuit></A></TD>
+    <TD><A onmouseover="flip(monetary, img_b3);" onclick="return false;" 
+      onmouseout="flip(monetary, img_3b);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/monetary.gif" width=100 name=monetary></A></TD>
+
+    <TD><A onmouseover="flip(wavicle, img_c3);" onclick="return false;" 
+      onmouseout="flip(wavicle, img_3c);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/wavicle.gif" width=100 name=wavicle></A></TD>
+    <TD><A onmouseover="flip(freedom, img_d3);" onclick="return false;" 
+      onmouseout="flip(freedom, img_3d);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/freedom.gif" width=100 name=freedom></A></TD>
+    <TD><A onmouseover="flip(emotiona, img_e3);" onclick="return false;" 
+      onmouseout="flip(emotiona, img_3e);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/emotiona.gif" width=100 name=emotiona></A></TD>
+    <TD><A onmouseover="flip(gestalt, img_f3);" onclick="return false;" 
+      onmouseout="flip(gestalt, img_3f);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/gestalt.gif" width=100 name=gestalt></A></TD></TR>
+  <TR>
+    <TD><A onmouseover="flip(harmony, img_a4);" onclick="return false;" 
+      onmouseout="flip(harmony, img_4a);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100,"><IMG height="100" 
+      src="gpgcards_files/harmony.gif" width="100" name="harmony"></A></TD>
+    <TD><A onmouseover="flip(hiddenpo, img_b4);" onclick="return false;" 
+      onmouseout="flip(hiddenpo, img_4b);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/hiddenpo.gif" width=100 name=hiddenpo></A></TD>
+
+    <TD><A onmouseover="flip(joy, img_c4);" onclick="return false;" 
+      onmouseout="flip(joy, img_4c);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/joy.gif" width=100 name=joy></A></TD>
+
+    <TD><A onmouseover="flip(magic, img_d4);" onclick="return false;" 
+      onmouseout="flip(magic, img_4d);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/magic.gif" width=100 name=magic></A></TD>
+    <TD><A onmouseover="flip(mechanic, img_e4);" onclick="return false;" 
+      onmouseout="flip(mechanic, img_4e);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/mechanic.gif" width=100 name=mechanic></A></TD>
+    <TD><A onmouseover="flip(metamorp, img_f4);" onclick="return false;" 
+      onmouseout="flip(metamorp, img_4f);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/metamorp.gif" width=100 name=metamorp></A></TD></TR>
+  <TR>
+    <TD><A onmouseover="flip(naturalp, img_a5);" onclick="return false;" 
+      onmouseout="flip(naturalp, img_5a);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100,"><IMG height=100 
+      src="gpgcards_files/naturalp.gif" width=100 name=naturalp></A></TD>
+    <TD><A onmouseover="flip(myth, img_b5);" onclick="return false;" 
+      onmouseout="flip(myth, img_5b);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/myth.gif" width=100 name=myth></A></TD>
+    <TD><A onmouseover="flip(niches, img_c5);" onclick="return false;" 
+      onmouseout="flip(niches, img_5c);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/niches.gif" width=100 name=niches></A></TD>
+    <TD><A onmouseover="flip(perspect, img_d5);" onclick="return false;" 
+      onmouseout="flip(perspect, img_5d);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/perspect.gif" width=100 name=perspect></A></TD>
+
+    <TD><A onmouseover="flip(reaching, img_e5);" onclick="return false;" 
+      onmouseout="flip(reaching, img_5e);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/reaching.gif" width=100 name=reaching></A></TD>
+    <TD><A onmouseover="flip(retur, img_f5);" onclick="return false;" 
+      onmouseout="flip(retur, img_5f);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/404.htm" width=100 name=retur ="return.gif"></A></TD></TR>
+  <TR>
+    <TD><A onmouseover="flip(societya, img_a6);" onclick="return false;" 
+      onmouseout="flip(societya, img_6a);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/societya.gif" width=100 name=societya></A></TD>
+    <TD><A onmouseover="flip(strength, img_b6);" onclick="return false;" 
+      onmouseout="flip(strength, img_6b);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/strength.gif" width=100 name=strength></A></TD>
+    <TD><A onmouseover="flip(struggle, img_c6);" onclick="return false;" 
+      onmouseout="flip(struggle, img_6c);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/struggle.gif" width=100 name=struggle></A></TD>
+    <TD><A onmouseover="flip(synergy, img_d6);" onclick="return false;" 
+      onmouseout="flip(synergy, img_6d);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/synergy.gif" width=100 name=synergy></A></TD>
+    <TD><A onmouseover="flip(syntax, img_e6);" onclick="return false;" 
+      onmouseout="flip(syntax, img_6e);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/syntax.gif" width=100 name=syntax></A></TD>
+    <TD><A onmouseover="flip(unwanted, img_f6);" onclick="return false;" 
+      onmouseout="flip(unwanted, img_6f);" href="http://www.peak.org/~caploc/>" 
+      target=B height="100" weight="100"><IMG height=100 
+      src="gpgcards_files/unwanted.gif" width=100 name=unwanted></A></TD></TR><!--
+ <tr>
+
+  <TR>
+    <TD><A onmouseover="flip(structur, img_a7);" onclick="return false;" 
+      onmouseout="flip(structur, img_7a);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/structur.gif" width=100 name=structur></A></TD>
+    <TD><A onmouseover="flip(anthropo, img_b7);" onclick="return false;" 
+      onmouseout="flip(anthropo, img_7b);" href="http://www.peak.org/~caploc/>" 
+      target=B width="100" height="100"><IMG height=100 
+      src="gpgcards_files/anthropo.gif" width=100 
+  name=anthropo></A></TD></TR></TBODY></TABLE></center>
+</body>
+</html>
